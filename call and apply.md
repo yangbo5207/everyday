@@ -13,4 +13,34 @@ var domList = document.getElementsByTagName('li');
 
 // 将nodeList转换为数组
 Array().prototype.slice.call(domList);
+//[].slice.call(domList);
 ```
+
+在继承的实现中继承父级的参数
+
+```js
+
+// 父级构造函数
+var Person = function(name, age) {
+  this.gender = ['men', 'women'];
+  this.name = name;
+  this.age  = age;
+}
+
+// 子类
+var Student = function(name, age, high) {
+  Person.call(this, name, age);
+  this.high = high;
+}
+Student.prototype = {
+  constructor: Student,
+  message: function() {
+    console.log('name:'+this.name+', age:'+this.age+', high:'+this.high+', gender:'+this.gender[0]);
+  }
+}
+
+var xm = new Student('xiaom', '12', '150cm');
+sm.message(); // name:xiaom, age:12, high:150cm, gender:men; [可以访问到从父级继承而来的属性]
+```
+
+
