@@ -29,6 +29,8 @@ var Person = function(name, age) {
 
 // 子类
 var Student = function(name, age, high) {
+
+  // 继承父级的属性
   Person.call(this, name, age);
   this.high = high;
 }
@@ -42,5 +44,9 @@ Student.prototype = {
 var xm = new Student('xiaom', '12', '150cm');
 sm.message(); // name:xiaom, age:12, high:150cm, gender:men; [可以访问到从父级继承而来的属性]
 ```
+
+传递参数
+
+
 
 
