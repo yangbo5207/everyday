@@ -16,6 +16,23 @@ Array().prototype.slice.call(domList);
 //[].slice.call(domList);
 ```
 
+又比如：
+```js
+var fn = {
+  name: 'jake',
+  showName: function() {
+    console.log(this.name);
+  }
+},
+
+// foo中没有showName方法，但是他可以通过call/apply来调用fn中的showName方法
+var foo = {
+  name: 'nicco'
+}
+
+fn.showName.call(foo);  // nicco
+```
+
 在继承的实现中继承父级的参数
 
 ```js
@@ -45,8 +62,64 @@ var xm = new Student('xiaom', '12', '150cm');
 sm.message(); // name:xiaom, age:12, high:150cm, gender:men; [可以访问到从父级继承而来的属性]
 ```
 
-传递参数
+在封装对象过程中保证this的正确传递
+```js
+// 定义一个简化的jQuery插件，使用call/applay来保证this的正确传递
 
+// 先引入一个jQuery
+<script src="jQuery.js"></script>
 
+<script>
+// 先定义一个对象，其中参数 box：jQuery对象，str：字符
+var Nicco = function(box, str) {
+  this.$box = box;
+  this.str = str;
+}
+Nicco.prototype = {
+  constructor: Nicco,
+  
+  message: function() {
+    this.$box.on('mousedown', this.bindThis(this.fnDown, this));
+  },
+  
+  // 因为fn.call(obj)会立即执行，因此需要加一层function套起来，还有一种写法
+  message2: function() {
+    var _this = this;
+    this.$box.on(
+      'mousedown', 
+      function() {
+        return _this.fnDown.call(_this);
+      } 
+    )
+  },
+  
+  fnDown: function(e) {
+    this.str += ', my name is nicco';
+    this.$box.on('mouseup', this.bindThis(this.fnUp, this));
+  }, 
+  
+  fnUp: function(e) {
+    console.log('message:' +this.str);
+  },
+  
+  // 定义传递this的参数，其实质是this来调用定义好的方法，这样可以保证在on的回调函数中，this的指向保持一致
+  bindThis: function(fn, obj) {
+    return function() {
+      return fn.apply(fn, arguments);
+    }
+  };
+}
 
+// 定义jQuery插件
+$.fn.mess = function(str) {
+  var nic = new Nicco( $(this), str );
+  return nic.message();
+}
+
+$(function() {
+  $('.box').mess('hello'); // hello, my name is nicco.
+});
+
+</script>
+```
 
